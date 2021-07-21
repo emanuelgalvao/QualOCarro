@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">qualocarro</string>
+    <string name="app_name">Qual o Carro?</string>
     <string name="type_the_board">Digite a placa do veículo que deseja pesquisar:</string>
     <string name="search">Buscar</string>
     <string name="placeholder_board">AAA-0000</string>
