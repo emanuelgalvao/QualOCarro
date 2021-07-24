@@ -8,7 +8,7 @@ class MaskUtils {
 
     val BOARD_MASK = "###-####"
 
-    fun mask(ediText: EditText): TextWatcher? {
+    fun mask(ediText: EditText): TextWatcher {
 
         return object : TextWatcher {
 

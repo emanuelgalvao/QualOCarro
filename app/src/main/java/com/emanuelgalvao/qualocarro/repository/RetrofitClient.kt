@@ -15,7 +15,7 @@ class RetrofitClient {
     companion object{
 
         private lateinit var retrofit: Retrofit
-        private val baseUrl = "https://apicarros.com/v1/consulta/"
+        private const val baseUrl = "https://apicarros.com/v1/consulta/"
 
         private fun getRetrofitInstance(): Retrofit {
 

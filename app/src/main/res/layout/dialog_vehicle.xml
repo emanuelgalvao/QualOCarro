@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minWidth="300dp"
-    android:padding="8dp"
+    android:minWidth="350dp"
+    android:padding="16dp"
     android:background="@color/background_secondary">
 
     <TextView
@@ -49,6 +49,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/text_brand"
         app:layout_constraintTop_toTopOf="@id/text_brand"
+        android:layout_marginStart="8dp"
         android:textSize="18sp"
         android:textAllCaps="true"/>
 
@@ -70,6 +71,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/text_year"
         app:layout_constraintTop_toTopOf="@id/text_year"
+        android:layout_marginStart="8dp"
         android:textSize="18sp"
         android:textAllCaps="true"/>
 
@@ -91,6 +93,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/text_color"
         app:layout_constraintTop_toTopOf="@id/text_color"
+        android:layout_marginStart="8dp"
         android:textSize="18sp"
         android:textAllCaps="true"/>
 
@@ -112,6 +115,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/text_chassi"
         app:layout_constraintTop_toTopOf="@id/text_chassi"
+        android:layout_marginStart="8dp"
         android:textSize="18sp"
         android:textAllCaps="true"/>
 
@@ -133,6 +137,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/text_board"
         app:layout_constraintTop_toTopOf="@id/text_board"
+        android:layout_marginStart="8dp"
         android:textSize="18sp"
         android:textAllCaps="true"/>
 
@@ -154,6 +159,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/text_city"
         app:layout_constraintTop_toTopOf="@id/text_city"
+        android:layout_marginStart="8dp"
         android:textSize="18sp"
         android:textAllCaps="true"/>
 
@@ -175,6 +181,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/text_situation"
         app:layout_constraintTop_toTopOf="@id/text_situation"
+        android:layout_marginStart="8dp"
         android:textSize="18sp"
         android:textAllCaps="true"/>
 
