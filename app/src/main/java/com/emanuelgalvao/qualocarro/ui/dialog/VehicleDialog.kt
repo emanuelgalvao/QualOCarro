@@ -6,36 +6,39 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 import com.emanuelgalvao.qualocarro.R
+import com.emanuelgalvao.qualocarro.databinding.DialogVehicleBinding
 import com.emanuelgalvao.qualocarro.model.Vehicle
-import kotlinx.android.synthetic.main.dialog_vehicle.*
 
 class VehicleDialog(context: Context, private var bundle: Bundle) : Dialog(context), View.OnClickListener {
 
     private lateinit var vehicle: Vehicle
+    private lateinit var binding: DialogVehicleBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
 
-        setContentView(R.layout.dialog_vehicle)
+        binding = DialogVehicleBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
 
         val seriazable = bundle.getSerializable("vehicle")
         vehicle = seriazable as Vehicle
 
         fillFields()
 
-        image_close.setOnClickListener(this)
+        binding.imageClose.setOnClickListener(this)
     }
 
     private fun fillFields() {
 
-        text_brand_value.text = vehicle.marca
-        text_year_value.text = "${vehicle.ano}/${vehicle.anoModelo}"
-        text_color_value.text = vehicle.cor
-        text_chassi_value.text = vehicle.chassi
-        text_board_value.text = vehicle.placa
-        text_city_value.text = "${vehicle.municipio}/${vehicle.uf}"
-        text_situation_value.text = vehicle.situacao
+        binding.textBrandValue.text = vehicle.marca
+        binding.textYearValue.text = "${vehicle.ano}/${vehicle.anoModelo}"
+        binding.textColorValue.text = vehicle.cor
+        binding.textChassiValue.text = vehicle.chassi
+        binding.textBoardValue.text = vehicle.placa
+        binding.textCityValue.text = "${vehicle.municipio}/${vehicle.uf}"
+        binding.textSituationValue.text = vehicle.situacao
     }
 
     override fun onClick(v: View?) {

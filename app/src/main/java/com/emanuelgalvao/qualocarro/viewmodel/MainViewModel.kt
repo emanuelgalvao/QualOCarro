@@ -3,50 +3,49 @@ package com.emanuelgalvao.qualocarro.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.emanuelgalvao.qualocarro.listener.ApiListener
-import com.emanuelgalvao.qualocarro.listener.ValidationListener
+import androidx.lifecycle.viewModelScope
 import com.emanuelgalvao.qualocarro.model.Vehicle
+import com.emanuelgalvao.qualocarro.repository.ApiResponse
+import com.emanuelgalvao.qualocarro.repository.VehicleRemoteDataSource
 import com.emanuelgalvao.qualocarro.repository.VehicleRepository
+import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+sealed interface MainViewEvent {
+    class Error(val message: String) : MainViewEvent
+    class Success(val data: Vehicle): MainViewEvent
 
-    private val mVehicleRepository = VehicleRepository()
+}
 
-    private val mValidation = MutableLiveData<ValidationListener>()
-    val validation: LiveData<ValidationListener> = mValidation
+class MainViewModel(
+    private val vehicleRepository: VehicleRepository = VehicleRemoteDataSource()
+): ViewModel() {
 
-    private val mVehicle = MutableLiveData<Vehicle>()
-    val vehicle: LiveData<Vehicle> = mVehicle
+    private val CAR_PLATE_REGEX = "[A-z]{3}-\\d[A-j0-9]\\d{2}"
 
-    fun findVehicle(board: String) {
-        if (validateBoard(board)) {
-            mVehicleRepository.findVehicle(board, object : ApiListener {
-                override fun onSucess(vehicle: Vehicle) {
-                    mValidation.value = ValidationListener()
-                    mVehicle.value = vehicle
+    private val _event = MutableLiveData<MainViewEvent>()
+    val event: LiveData<MainViewEvent> = _event
+
+    fun findVehicle(plate: String) {
+        if (isValidCarPlate(plate)) {
+            viewModelScope.launch {
+                val response = vehicleRepository.findVehicle(plate)
+                when (response) {
+                    is ApiResponse.Success -> {
+                        _event.value = MainViewEvent.Success(response.data)
+                    }
+                    is ApiResponse.Error -> {
+                        _event.value = MainViewEvent.Error(response.message)
+                    }
                 }
-
-                override fun onFailure(message: String) {
-                    mValidation.value = ValidationListener(message)
-                }
-            })
+            }
         }
     }
 
-    private fun validateBoard(board: String): Boolean {
-
-        var valid = false
-
-        if (board.length == 7){
-            if(board[0].isLetter() && board[1].isLetter() && board[2].isLetter() && board[3].isDigit() && board[4].isLetterOrDigit() && board[5].isDigit() && board[6].isDigit()) {
-                valid = true
-            }
+    private fun isValidCarPlate(plate: String): Boolean {
+        if (!Regex(CAR_PLATE_REGEX).matches(plate)) {
+            _event.value = MainViewEvent.Error("Preencha a placa corretamente.")
+            return false
         }
-
-        if (!valid){
-            mValidation.value = ValidationListener("Preencha a placa corretamente.")
-        }
-
-        return valid
+        return true
     }
 }

@@ -1,73 +1,78 @@
 package com.emanuelgalvao.qualocarro.ui.activity
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.emanuelgalvao.qualocarro.R
+import com.emanuelgalvao.qualocarro.databinding.ActivityMainBinding
 import com.emanuelgalvao.qualocarro.ui.dialog.InfoDialog
 import com.emanuelgalvao.qualocarro.ui.dialog.VehicleDialog
 import com.emanuelgalvao.qualocarro.util.MaskUtils
+import com.emanuelgalvao.qualocarro.viewmodel.MainViewEvent
 import com.emanuelgalvao.qualocarro.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var mViewModel: MainViewModel
+    private lateinit var viewModel: MainViewModel
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         supportActionBar?.hide()
 
-        mViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        observers()
-
-        input_board.addTextChangedListener(MaskUtils().mask(input_board))
-        text_search.setOnClickListener(this)
-        image_info.setOnClickListener(this)
+        setupObservers()
+        setupListeners()
     }
 
-    private fun observers() {
-        mViewModel.validation.observe(this, {
-            if (!it.isSucess()) {
-                val snackbar = Snackbar.make(root, it.getMessage(), Snackbar.LENGTH_LONG)
-                snackbar.setBackgroundTint(getColor(R.color.background_snackbar))
-                snackbar.show()
+    private fun setupObservers() {
+        viewModel.event.observe(this) { event ->
+            when (event) {
+                is MainViewEvent.Error -> {
+                    val snackbar = Snackbar.make(binding.root, event.message, Snackbar.LENGTH_LONG)
+                    snackbar.setBackgroundTint(getColor(R.color.background_snackbar))
+                    snackbar.show()
+                    binding.inputBoard.isEnabled = true
+                    binding.textSearch.isVisible = true
+                    binding.progressSearch.isVisible = false
+                }
+                is MainViewEvent.Success -> {
+                    binding.inputBoard.text.clear()
+                    val bundle = Bundle()
+                    bundle.putSerializable("vehicle", event.data)
+                    val vehicleDialog = VehicleDialog(this, bundle)
+                    vehicleDialog.show()
+                }
             }
-            input_board.isEnabled = true
-            text_search.isVisible = true
-            progress_search.isVisible = false
-        })
-
-        mViewModel.vehicle.observe(this, {
-
-            input_board.text.clear()
-            val bundle = Bundle()
-            bundle.putSerializable("vehicle", it)
-            val vehicleDialog = VehicleDialog(this, bundle)
-            vehicleDialog.show()
-        })
+        }
     }
 
-    override fun onClick(v: View?) {
-        if (v?.id == R.id.text_search) {
-
-            input_board.isEnabled = false
-            text_search.isVisible = false
-            progress_search.isVisible = true
-            val board = MaskUtils().unmask(input_board.text.trim().toString())
-            mViewModel.findVehicle(board)
-
-        } else if (v?.id == R.id.image_info) {
-
-            val infoDialog = InfoDialog(this)
-            infoDialog.show()
-
+    private fun setupListeners() = binding.run {
+        binding.inputBoard.addTextChangedListener(MaskUtils().mask(binding.inputBoard))
+        binding.textSearch.setOnClickListener {
+            handleSearchVehicleClick()
         }
+        binding.imageInfo.setOnClickListener {
+            handleInfoClick()
+        }
+    }
+
+    private fun handleSearchVehicleClick() {
+        binding.inputBoard.isEnabled = false
+        binding.textSearch.isVisible = false
+        binding.progressSearch.isVisible = true
+        val board = binding.inputBoard.text.trim().toString()
+        viewModel.findVehicle(board)
+    }
+
+    private fun handleInfoClick() {
+        val infoDialog = InfoDialog(this)
+        infoDialog.show()
     }
 }

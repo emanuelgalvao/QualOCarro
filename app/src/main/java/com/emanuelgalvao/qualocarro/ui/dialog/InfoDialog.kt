@@ -3,24 +3,22 @@ package com.emanuelgalvao.qualocarro.ui.dialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.View
 import android.view.Window
-import com.emanuelgalvao.qualocarro.R
-import kotlinx.android.synthetic.main.dialog_vehicle.*
+import com.emanuelgalvao.qualocarro.databinding.DialogInfoBinding
 
-class InfoDialog(context: Context) : Dialog(context), View.OnClickListener {
+class InfoDialog(context: Context) : Dialog(context) {
+
+    private lateinit var binding: DialogInfoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
 
-        setContentView(R.layout.dialog_info)
+        binding = DialogInfoBinding.inflate(layoutInflater)
 
-        image_close.setOnClickListener(this)
-    }
+        setContentView(binding.root)
 
-    override fun onClick(v: View?) {
-        if (v?.id == R.id.image_close) {
+        binding.imageClose.setOnClickListener {
             dismiss()
         }
     }
