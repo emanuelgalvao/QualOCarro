@@ -9,11 +9,11 @@
     <string name="developer_github">github.com/emanuelgalvao</string>
     <string name="developer_linkedin">linkedin.com/in/emanuel-galvao</string>
     <string name="vehicle_data">Dados do veículo</string>
-    <string name="brand">Marca:</string>
-    <string name="year">Ano:</string>
-    <string name="color">Cor:</string>
-    <string name="chassi">Chassi:</string>
-    <string name="board">Placa:</string>
-    <string name="city_state">Cidade/Estado:</string>
-    <string name="situation">Situação:</string>
+    <string name="brand">Marca: %s</string>
+    <string name="year">Ano: %s</string>
+    <string name="color">Cor: %s</string>
+    <string name="chassi">Chassi: %s</string>
+    <string name="board">Placa: %s</string>
+    <string name="city_state">Cidade/Estado: %s</string>
+    <string name="situation">Situação: %s</string>
 </resources>

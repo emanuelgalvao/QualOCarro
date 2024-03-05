@@ -9,10 +9,18 @@ import com.emanuelgalvao.qualocarro.repository.ApiResponse
 import com.emanuelgalvao.qualocarro.repository.VehicleRepository
 import kotlinx.coroutines.launch
 
-sealed interface MainViewEvent {
-    class Error(val message: String) : MainViewEvent
-    class Success(val data: Vehicle): MainViewEvent
+sealed interface MainViewState {
+    class Error(val message: String) : MainViewState
+    class Success(val data: Vehicle): MainViewState
+    object Loading: MainViewState
+    object Default: MainViewState
+    object OpenInfo: MainViewState
+}
 
+sealed interface MainViewIntent {
+    class SearchVehicle(val plate: String): MainViewIntent
+    object OpenInfoBottomSheet: MainViewIntent
+    object CloseBottomSheet: MainViewIntent
 }
 
 class MainViewModel(
@@ -21,28 +29,41 @@ class MainViewModel(
 
     private val CAR_PLATE_REGEX = "[A-z]{3}\\d[A-j0-9]\\d{2}"
 
-    private val _event = MutableLiveData<MainViewEvent>()
-    val event: LiveData<MainViewEvent> = _event
+    private val _state = MutableLiveData<MainViewState>(MainViewState.Default)
+    val state: LiveData<MainViewState> = _state
 
-    fun findVehicle(plate: String) {
-        if (isValidCarPlate(plate)) {
+    fun handleIntent(intent: MainViewIntent) {
+        when (intent) {
+            MainViewIntent.CloseBottomSheet -> _state.value = MainViewState.Default
+            MainViewIntent.OpenInfoBottomSheet -> _state.value = MainViewState.OpenInfo
+            is MainViewIntent.SearchVehicle -> findVehicle(intent.plate)
+        }
+    }
+
+    private fun findVehicle(plate: String) {
+        _state.value = MainViewState.Loading
+        if (isValidCarPlate(formatPlate(plate))) {
             viewModelScope.launch {
-                val response = vehicleRepository.findVehicle(plate)
+                val response = vehicleRepository.findVehicle(formatPlate(plate))
                 when (response) {
                     is ApiResponse.Success -> {
-                        _event.value = MainViewEvent.Success(response.data)
+                        _state.value = MainViewState.Success(response.data)
                     }
                     is ApiResponse.Error -> {
-                        _event.value = MainViewEvent.Error(response.message)
+                        _state.value = MainViewState.Error(response.message)
                     }
                 }
             }
         }
     }
 
+    private fun formatPlate(plate: String): String {
+        return plate.replace("-", "")
+    }
+
     private fun isValidCarPlate(plate: String): Boolean {
         if (!Regex(CAR_PLATE_REGEX).matches(plate)) {
-            _event.value = MainViewEvent.Error("Preencha a placa corretamente.")
+            _state.value = MainViewState.Error("Preencha a placa corretamente.")
             return false
         }
         return true

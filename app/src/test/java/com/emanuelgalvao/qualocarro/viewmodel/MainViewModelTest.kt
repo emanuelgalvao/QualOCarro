@@ -5,14 +5,11 @@ import com.emanuelgalvao.qualocarro.repository.ApiResponse
 import com.emanuelgalvao.qualocarro.repository.VehicleRepository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -44,10 +41,10 @@ class MainViewModelTest {
         val plate = "ARN-2229"
         coEvery { vehicleRepository.findVehicle(any()) } returns ApiResponse.Success(mockk(relaxed = true))
 
-        launch{ viewModel.findVehicle(plate) }
+        launch{ viewModel.handleIntent(MainViewIntent.SearchVehicle(plate = plate)) }
         advanceUntilIdle()
 
-        Assert.assertTrue(viewModel.event.value is MainViewEvent.Success)
+        Assert.assertTrue(viewModel.state.value is MainViewState.Success)
     }
 
     @Test
@@ -55,20 +52,20 @@ class MainViewModelTest {
         val plate = "ARN-2229"
         coEvery { vehicleRepository.findVehicle(any()) } returns ApiResponse.Error("")
 
-        launch { viewModel.findVehicle(plate) }
+        launch{ viewModel.handleIntent(MainViewIntent.SearchVehicle(plate = plate)) }
         advanceUntilIdle()
 
-        Assert.assertTrue(viewModel.event.value is MainViewEvent.Error)
+        Assert.assertTrue(viewModel.state.value is MainViewState.Error)
     }
 
     @Test
     fun `findVehicle method should post error event when plate is invalid`() = runTest {
         val plate = "AR2-2229"
 
-        launch { viewModel.findVehicle(plate) }
+        launch{ viewModel.handleIntent(MainViewIntent.SearchVehicle(plate = plate)) }
         advanceUntilIdle()
 
-        val errorMessage = (viewModel.event.value as? MainViewEvent.Error)?.message
+        val errorMessage = (viewModel.state.value as? MainViewState.Error)?.message
 
         Assert.assertEquals("Preencha a placa corretamente.", errorMessage)
     }
