@@ -22,7 +22,10 @@
   <h2 align="center">Recursos Utilizados</h2>
 
 - Linguagem Kotlin para o desenvolvimento <br>
-- Arquitetura MVVM como padrão de projeto<br>
-- Retrofit para realizar as requisições a API <br>
+- Jetpack Compose para criação das interfaces<br>
+- Arquitetura MVI para interação com a tela<br>
+- Retrofit para realizar as requisições a API<br>
 - API-Carros para obter as informações <br>
+- Koin para injeção de dependências<br>
+- Criação de Testes Unitários utilizando JUnit e Mockk<br>
 </div>
